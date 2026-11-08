@@ -1,5 +1,7 @@
 # llm-guardrails
 
+[![CI](https://github.com/marchikx/llm-guardrails/actions/workflows/ci.yml/badge.svg)](https://github.com/marchikx/llm-guardrails/actions/workflows/ci.yml) ![License: MIT](https://img.shields.io/badge/license-MIT-blue.svg)
+
 ## What it is and who it is for
 
 `llm-guardrails` is a small TypeScript library for teams that call paid LLM APIs from a gateway or worker. It provides fail-closed spend ceilings, a kill switch, ROI gates by model tier, PII redaction, prompt sanitization, token-bucket throttling, and a simple circuit breaker—all with in-memory adapters so you can wire it in without Redis or a database.
