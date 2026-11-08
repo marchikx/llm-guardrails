@@ -6,7 +6,7 @@ export type LlmGateContext = {
   organizationId?: string;
   action: string;
   expectedRevenueUpliftUsd?: number;
-  bypass?: boolean;
+  skipRoiCheck?: boolean;
 };
 
 export type AssertLlmOptions = GateCallOptions & {
@@ -42,7 +42,7 @@ export function assertLlmAllowed(
     promptTokens,
     completionTokens,
     expectedRevenueUpliftUsd: ctx.expectedRevenueUpliftUsd ?? 0,
-    bypass: ctx.bypass,
+    skipRoiCheck: ctx.skipRoiCheck,
   };
   const gate = gateCall(input, options);
   if (!gate.ok) {

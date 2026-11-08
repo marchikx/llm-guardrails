@@ -65,4 +65,29 @@ describe("gateCall", () => {
     expect(result.ok).toBe(true);
     expect(result.tier).toBe("TIER_0");
   });
+
+  describe("skipRoiCheck", () => {
+    it("skips only the ROI ratio", () => {
+      const noUplift = baseInput({ expectedRevenueUpliftUsd: 0 });
+      expect(gateCall(noUplift, { store }).reason).toBe("ROI_RATIO_BELOW_MIN");
+      expect(gateCall({ ...noUplift, skipRoiCheck: true }, { store }).ok).toBe(true);
+    });
+
+    it("can never override the kill switch", () => {
+      store.setKillSwitch(true, org);
+      const result = gateCall(baseInput({ skipRoiCheck: true }), { store });
+      expect(result).toMatchObject({ ok: false, reason: "COST_KILL_SWITCH_ACTIVE" });
+    });
+
+    it("can never override the daily hard cap", () => {
+      store.recordSpend(org, 50);
+      const result = gateCall(baseInput({ skipRoiCheck: true }), { store });
+      expect(result).toMatchObject({ ok: false, reason: "BUDGET_HARD_CAP_EXCEEDED" });
+    });
+
+    it("can never unlock TIER_4 models", () => {
+      const result = gateCall(baseInput({ model: "claude-opus", skipRoiCheck: true }), { store });
+      expect(result).toMatchObject({ ok: false, reason: "TIER_4_FORBIDDEN" });
+    });
+  });
 });

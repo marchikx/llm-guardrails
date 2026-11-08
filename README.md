@@ -84,6 +84,8 @@ flowchart LR
 
 - **In-memory store** — Fast to adopt and test; not shared across processes. Swap `InMemoryCostStore` for your own adapter implementing the same surface.
 - **Fail-closed gates** — Kill switch, $50 daily hard cap (configurable per call), TIER_4 blocked, and minimum ROI ratios mirror production gateway patterns without external deps.
+- **No master bypass** — the only escape hatch is `skipRoiCheck` (for internal evals without a revenue estimate). It cannot override the kill switch, the hard cap, or the TIER_4 block; tests pin each of those.
+- **Process-local store** — `InMemoryCostStore` counts spend per process. Behind several workers, implement the same `getDailySpendUsd` / `recordSpend` / `getKillSwitch` surface on Redis or Postgres, otherwise each replica gets its own $50.
 - **Heuristic PII / injection filters** — Regex-based redaction and pattern stripping reduce accidental secret leakage; they are not a substitute for DLP or provider safety policies.
 - **Synchronous API** — `gateCall` and `assertLlmAllowed` are sync for simplicity; async stores can wrap these at the edge.
 

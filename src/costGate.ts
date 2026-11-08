@@ -13,7 +13,8 @@ export interface CostGateInput {
   promptTokens: number;
   completionTokens: number;
   expectedRevenueUpliftUsd: number;
-  bypass?: boolean;
+  /** Skips only the ROI ratio check (e.g. internal evals). Kill switch, hard cap and TIER_4 always apply. */
+  skipRoiCheck?: boolean;
 }
 
 export interface CostGateResult {
@@ -53,10 +54,6 @@ export function gateCall(
     dailyBudgetUsd,
   };
 
-  if (input.bypass) {
-    return base;
-  }
-
   if (store.getKillSwitch(input.organizationId)) {
     return {
       ...base,
@@ -79,6 +76,10 @@ export function gateCall(
       ok: false,
       reason: "TIER_4_FORBIDDEN",
     };
+  }
+
+  if (input.skipRoiCheck) {
+    return base;
   }
 
   const minRatio = MIN_ROI_RATIO_BY_TIER[priced.tier];
