@@ -40,11 +40,23 @@ export function gateCall(
   const hardCapUsd = dailyBudgetUsd;
   const budgetUsedUsd = store.getDailySpendUsd(input.organizationId);
 
-  const priced = priceLlmCall(
-    input.model,
-    input.promptTokens,
-    input.completionTokens,
-  );
+  let priced: ReturnType<typeof priceLlmCall>;
+  try {
+    priced = priceLlmCall(
+      input.model,
+      input.promptTokens,
+      input.completionTokens,
+    );
+  } catch {
+    return {
+      ok: false,
+      tier: "TIER_3",
+      predictedCostUsd: 0,
+      reason: "UNKNOWN_MODEL",
+      budgetUsedUsd,
+      dailyBudgetUsd,
+    };
+  }
 
   const base: CostGateResult = {
     ok: true,

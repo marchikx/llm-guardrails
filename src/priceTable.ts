@@ -69,7 +69,7 @@ export function priceLlmCall(
 ): { costUsd: number; tier: CostTier; canonical: string } {
   const price = MODEL_PRICES[model];
   if (!price) {
-    return { costUsd: 0.1, tier: "TIER_3", canonical: model || "unknown-llm" };
+    throw new Error(`Unknown LLM model pricing: ${model || "<empty>"} — fail-closed (no silent default)`);
   }
   const costUsd =
     (promptTokens / 1000) * price.inputPer1k +
